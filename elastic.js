@@ -54,8 +54,13 @@ angular.module('monospaced.elastic', [])
                                 '-moz-box-sizing: content-box; box-sizing: content-box;' +
                                 'min-height: 0 !important; height: 0 !important; padding: 0;' +
                                 'word-wrap: break-word; border: 0;',
-              $mirror = angular.element('<textarea aria-hidden="true" tabindex="-1" ' +
+			  mirrorId = 'angular_elastic_textarea_' + Math.floor((Math.random() * 10000) + 1).toString(),
+              $mirrorLabel = angular.element('<label for="' + mirrorId + '" aria-hidden="true" ' +
+              							'tabindex="-1" style="display:none">' + mirrorId + '</label>')
+              							.data('elastic', true),
+              $mirror = angular.element('<textarea id="' + mirrorId + '" aria-hidden="true" tabindex="-1" ' +
                                         'style="' + mirrorInitStyle + '"/>').data('elastic', true),
+              mirrorLabel = $mirrorLabel[0],
               mirror = $mirror[0],
               taStyle = getComputedStyle(ta),
               resize = taStyle.getPropertyValue('resize'),
@@ -98,6 +103,7 @@ angular.module('monospaced.elastic', [])
 
           // append mirror to the DOM
           if (mirror.parentNode !== document.body) {
+            angular.element(document.body).append(mirrorLabel);
             angular.element(document.body).append(mirror);
           }
 
@@ -212,6 +218,7 @@ angular.module('monospaced.elastic', [])
            */
 
           scope.$on('$destroy', function() {
+            $mirrorLabel.remove();
             $mirror.remove();
             $win.unbind('resize', forceAdjust);
           });
